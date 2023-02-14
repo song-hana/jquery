@@ -1,0 +1,24 @@
+<script src='https://code.jquery.com/jquery-3.6.0.min.js'></script>
+<script>
+$(() => {
+    let h1 = $('h1')
+
+    h1.addClass('blue')
+    h1.removeClass('blue')
+    h1.toggleClass('blue')
+
+    console.log(h1.hasClass('blue'))
+
+    // 과제: h1.blue 이면 console.log 에 'blue' 를 출력하라.
+    h1.hasClass('blue') && console.log('blue')
+})
+</script>
+
+<style>
+    .blue {
+        color: blue;
+    }
+</style>
+
+<h1>HELLO</h1>
+<h1>WORLD</h1>
