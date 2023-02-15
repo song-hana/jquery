@@ -13,6 +13,8 @@ $(() => {
     text.val((i, v) => `hello ${v}`)
 
     $('input').val(['noon', 'sea', 'banana'])
+    $('#fruit').val('banana')
+    $('#greens').val(['cucumber', 'carrot'])
 })
 </script>
 
@@ -30,7 +32,7 @@ $(() => {
         <option>banana</option>
     </select>
 
-    <select id='greens' muliple>
+    <select id='greens' multiple>
         <option>cucumber</option>
         <option>cabbage</option>
         <option>carrot</option>
