@@ -10,9 +10,11 @@
 <title>hr.jquery</title>
 <script>
     $(() => {
+        let data
         let btns = $('.buttons')
         let addBtn = btns.find('.btn-primary')
         let fixBtn = btns.find('.btn-success')
+        let delCheck = btns.find('.btn-danger')
         let delBtn = $('.modal .modal-footer .btn-primary')
 
         let nameInput = $('form input').eq(0)
@@ -20,42 +22,128 @@
         let laborerName, hireDate
 
         let table = $('table tbody')
-        let selection = $(':radio')
-        let checked = table.find(selection)
+        let radio = 0
+        let select
 
         let laborerId = 10
+        let cnt = 0
+        
+        set()
+        delset()
 
         nameInput.change(function() {
             laborerName = $(this).val()
+            ready(addBtn)
+            ready(fixBtn)
+            afterName()
             return laborerName
         })
-
         dateInput.change(function() {
             hireDate = $(this).val()
+            ready(addBtn)
+            ready(fixBtn)
             return hireDate
         })
-
-        addBtn.click((nameInput, dateInput), () => {
-            let laborer = [laborerId, laborerName, hireDate]
-            if(laborerName && hireDate) {
-                table.append(`<tr><td><input type="radio" name="laborers"></td>
-                    <td>${laborerId}</td>
-                    <td>${laborerName}</td>
-                    <td>${hireDate}</td></tr>`)
-            }
-            laborerId++
+        table.on('change', radio, function(e) {
+            select = $(e.target).parents('tr')
+            ready(fixBtn)
+            delready()
+            afterSelect()
+            return select
         })
-
-
-        delBtn.click(() => {
-            selectLaborer()
-        })
-
-        function selectLaborer() {
-            
-        }
         
-        console.log(checked)
+        addBtn.click((nameInput, dateInput), () => {
+            let addRow = `<td><input type='radio' name='laborers' value='${laborerId}' class='selectLaborer'></td>
+                        <td>${laborerId}</td>
+                        <td>${laborerName}</td>
+                        <td>${hireDate}</td>`
+
+            if(laborerName && hireDate) {
+                if (cnt == 0) {
+                    table.find('.noLaborer').remove()
+                    table.children('tr').eq(0).html(addRow)
+                } else {
+                    $('<tr>' + addRow +'<tr>').insertBefore(table.children('tr').eq(0))
+                }
+                cnt++
+            } 
+            laborerId++
+            set()
+            radio = $('.selectLaborer')
+            return radio
+        })
+
+        fixBtn.click((select, nameInput, dateInput), () => {
+            let fixName = $(select).find('td').eq(2)
+            let fixDate = $(select).find('td').eq(3)
+            if(laborerName && hireDate) {
+                fixName.html(nameInput.val())
+                fixDate.html(dateInput.val())
+            }
+            set()
+        })
+
+
+        delBtn.click(function() {
+            select.html('')
+            delset()
+            set()
+        })
+
+        // ------function
+
+        function ready(btn) {
+            btn.removeAttr('data-bs-toggle')
+            btn.removeAttr('data-bs-target')
+        }
+
+        function afterName() {
+            addBtn.attr({
+                'data-bs-toggle': 'modal',
+                'data-bs-target': '#addLaborerNoDateModal'
+            })
+            fixBtn.attr({
+                'data-bs-toggle': 'modal',
+                'data-bs-target': '#addLaborerNoDateModal'
+            })
+        }
+
+        function delready() {
+            delCheck.attr({
+                'data-bs-toggle': 'modal',
+                'data-bs-target': '#delLaborerModal'
+            })
+        }
+
+        function set() {
+            addBtn.attr({
+            'data-bs-toggle': 'modal',
+            'data-bs-target': '#addLaborerNoNameModal'
+            })
+            fixBtn.attr({
+            'data-bs-toggle': 'modal',
+            'data-bs-target': '#noSelectLaborerModal'
+            })
+            nameInput.val('')
+            laborerName = ''
+            dateInput.val('')
+            hireDate = ''
+            console.log(select)
+        }
+
+        function delset() {
+            delCheck.attr({
+            'data-bs-toggle': 'modal',
+            'data-bs-target': '#noSelectLaborerModal'
+            })
+        }
+
+        function afterSelect() {
+            fixBtn.attr({
+            'data-bs-toggle': 'modal',
+            'data-bs-target': '#addLaborerNoNameModal'
+            })
+        }
     })
 </script>
 <style>
@@ -114,7 +202,7 @@
                 </tr>
             </thead>
             <tbody>
-                
+                <tr><td class='noLaborer' colspan='4'>노동자가 없습니다.</td></tr>
             </tbody>
         </table>
     </div>
@@ -132,7 +220,46 @@
             </div>
             <div class='modal-footer'>
                 <button type='button' class='btn btn-secondary' data-bs-dismiss='modal'>아니오</button>
-                <button type='button' class='btn btn-primary'>예</button>
+                <button type='button' class='btn btn-primary' data-bs-dismiss='modal'>예</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class='modal fade' id='addLaborerNoNameModal'>
+    <div class='modal-dialog'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <button type='button' class='btn-close' data-bs-dismiss='modal'></button>
+            </div>
+            <div class='modal-body'>
+                <p>노동자명을 입력하세요.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class='modal fade' id='addLaborerNoDateModal'>
+    <div class='modal-dialog'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <button type='button' class='btn-close' data-bs-dismiss='modal'></button>
+            </div>
+            <div class='modal-body'>
+                <p>입사일을 입력하세요.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class='modal fade' id='noSelectLaborerModal'>
+    <div class='modal-dialog'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <button type='button' class='btn-close' data-bs-dismiss='modal'></button>
+            </div>
+            <div class='modal-body'>
+                <p>노동자를 선택하세요.</p>
             </div>
         </div>
     </div>
